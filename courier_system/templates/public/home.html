@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Smart Courier System{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Smart AI-Enabled Courier Services</h1>
+                <p class="lead mb-4">Fast, reliable, and intelligent courier solutions powered by AI recommendations and real-time tracking.</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg me-2">Get Started</a>
+                <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">Login</a>
+                {% else %}
+                <a href="{% url 'bookings:book_courier' %}" class="btn btn-light btn-lg me-2">Book Courier</a>
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-light btn-lg">Dashboard</a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="bi bi-truck" style="font-size: 15rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-4 text-center mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-lightning-charge-fill text-primary" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Fast Delivery</h4>
+                    <p>Express and overnight delivery options available with AI-optimized routes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-geo-alt-fill text-success" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Real-Time Tracking</h4>
+                    <p>Track your shipments in real-time with mock GPS tracking and status updates.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-robot text-warning" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">AI Recommendations</h4>
+                    <p>Get intelligent delivery option suggestions based on your shipment details.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4" style="width: 100%;display:block;">How It Works</h2>
+            <div class="row">
+                <div class="col-md-3 text-center mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="badge bg-primary rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">1</div>
+                            <h5>Register & Login</h5>
+                            <p>Create your account and login to access the system.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="badge bg-primary rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">2</div>
+                            <h5>Book Courier</h5>
+                            <p>Fill in sender, receiver, and parcel details in our step-by-step form.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="badge bg-primary rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">3</div>
+                            <h5>AI Recommendations</h5>
+                            <p>Get smart delivery option suggestions and pricing.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="badge bg-primary rounded-circle p-3 mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">4</div>
+                            <h5>Pay & Track</h5>
+                            <p>Complete payment and track your shipment in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

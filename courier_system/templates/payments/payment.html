@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - {{ shipment.shipment_id }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Payment for Shipment: {{ shipment.shipment_id }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Base Price:</strong> ${{ shipment.base_price }}</p>
+                            {% if shipment.additional_charges > 0 %}
+                            <p><strong>Additional Charges:</strong> ${{ shipment.additional_charges }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h3>Total: ${{ shipment.total_price }}</h3>
+                        </div>
+                    </div>
+                    <hr>
+                    <p><strong>Delivery Option:</strong> {{ shipment.get_delivery_option_display }}</p>
+                    <p><strong>From:</strong> {{ shipment.sender_city }} → <strong>To:</strong> {{ shipment.receiver_city }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>Payment Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'payments:process_payment' shipment.shipment_id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method *</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="">Select payment method...</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="debit_card">Debit Card</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="card_name" class="form-label">Cardholder Name *</label>
+                            <input type="text" class="form-control" id="card_name" name="card_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="card_number" class="form-label">Card Number *</label>
+                            <input type="text" class="form-control" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="card_expiry" class="form-label">Expiry Date *</label>
+                                <input type="text" class="form-control" id="card_expiry" name="card_expiry" placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="card_cvv" class="form-label">CVV *</label>
+                                <input type="text" class="form-control" id="card_cvv" name="card_cvv" placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> This is a simulated payment system. No real transactions will be processed.
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg">Pay ${{ shipment.total_price }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Format card number
+document.getElementById('card_number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Format expiry date
+document.getElementById('card_expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+</script>
+{% endblock %}

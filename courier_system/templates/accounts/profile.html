@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Smart Courier System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar {
+        min-height: calc(100vh - 56px);
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+    }
+    .sidebar .nav-link {
+        color: #495057;
+        padding: 0.75rem 1.5rem;
+        border-left: 3px solid transparent;
+    }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+        background-color: #e9ecef;
+        border-left-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">
+            <i class="bi bi-truck"></i> Smart Courier
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 sidebar">
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'accounts:dashboard' %}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a class="nav-link" href="{% url 'bookings:book_courier' %}">
+                    <i class="bi bi-plus-circle"></i> Book Courier
+                </a>
+                <a class="nav-link" href="{% url 'bookings:shipment_list' %}">
+                    <i class="bi bi-list-ul"></i> My Shipments
+                </a>
+                <a class="nav-link active" href="{% url 'accounts:profile' %}">
+                    <i class="bi bi-person"></i> Profile
+                </a>
+            </nav>
+        </div>
+        <div class="col-md-9 py-4">
+            <h2 class="mb-4">My Profile</h2>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ user.phone_number }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="2">{{ user.address }}</textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ user.city }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ user.state }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="postal_code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code" value="{{ user.postal_code }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" class="form-control" id="country" name="country" value="{{ user.country }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                            {% if user.profile_picture %}
+                            <small class="text-muted">Current: <a href="{{ user.profile_picture.url }}" target="_blank">View</a></small>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

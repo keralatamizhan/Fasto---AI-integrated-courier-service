@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Smart Courier System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">Contact Us</h1>
+            <p class="lead">We're here to help! Get in touch with us for any questions or support.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="mb-4">Get in Touch</h3>
+                    <form method="post" action="{% url 'contact' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="mb-4">Contact Information</h3>
+                    <div class="mb-4">
+                        <h5><i class="bi bi-geo-alt-fill text-primary"></i> Address</h5>
+                        <p>123 Courier Street<br>New York, NY 10001<br>United States</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5><i class="bi bi-telephone-fill text-success"></i> Phone</h5>
+                        <p>+1 (555) 123-4567<br>Mon-Fri: 9:00 AM - 6:00 PM</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5><i class="bi bi-envelope-fill text-warning"></i> Email</h5>
+                        <p>info@smartcourier.com<br>support@smartcourier.com</p>
+                    </div>
+                    <div>
+                        <h5><i class="bi bi-clock text-info"></i> Business Hours</h5>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

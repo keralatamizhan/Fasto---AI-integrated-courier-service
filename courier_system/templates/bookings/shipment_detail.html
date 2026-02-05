@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Shipment Details - {{ shipment.shipment_id }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Shipment Details: {{ shipment.shipment_id }}</h2>
+        <a href="{% url 'bookings:shipment_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Sender Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ shipment.sender_name }}</p>
+                    <p><strong>Phone:</strong> {{ shipment.sender_phone }}</p>
+                    <p><strong>Address:</strong> {{ shipment.sender_address }}</p>
+                    <p><strong>City:</strong> {{ shipment.sender_city }}, {{ shipment.sender_state }} {{ shipment.sender_postal_code }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Receiver Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ shipment.receiver_name }}</p>
+                    <p><strong>Phone:</strong> {{ shipment.receiver_phone }}</p>
+                    <p><strong>Address:</strong> {{ shipment.receiver_address }}</p>
+                    <p><strong>City:</strong> {{ shipment.receiver_city }}, {{ shipment.receiver_state }} {{ shipment.receiver_postal_code }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Parcel Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Type:</strong> {{ shipment.parcel.parcel_type }}</p>
+                    <p><strong>Weight:</strong> {{ shipment.parcel.weight_kg }} kg ({{ shipment.parcel.get_weight_category_display }})</p>
+                    {% if shipment.parcel.fragile %}
+                    <p><span class="badge bg-warning">Fragile Item</span></p>
+                    {% endif %}
+                    {% if shipment.parcel.description %}
+                    <p><strong>Description:</strong> {{ shipment.parcel.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipment Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> 
+                        <span class="badge bg-{% if shipment.status == 'delivered' %}success{% elif shipment.status == 'pending' %}warning{% elif shipment.status == 'in_transit' %}info{% else %}secondary{% endif %}">
+                            {{ shipment.get_status_display }}
+                        </span>
+                    </p>
+                    <p><strong>Delivery Option:</strong> {{ shipment.get_delivery_option_display }}</p>
+                    <p><strong>Total Price:</strong> ${{ shipment.total_price }}</p>
+                    <p><strong>Created:</strong> {{ shipment.created_at|date:"F d, Y H:i" }}</p>
+                    {% if shipment.estimated_delivery_date %}
+                    <p><strong>Estimated Delivery:</strong> {{ shipment.estimated_delivery_date|date:"F d, Y H:i" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if shipment.ai_recommended_option %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5><i class="bi bi-robot"></i> AI Recommendation</h5>
+            <p><strong>Recommended Option:</strong> {{ shipment.get_ai_recommended_option_display }}</p>
+            <p><strong>Estimated Time:</strong> {{ shipment.ai_eta_hours }} hours</p>
+            {% if shipment.ai_reason %}
+            <p><strong>Reason:</strong> {{ shipment.ai_reason }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center">
+        <a href="{% url 'tracking:track_shipment' shipment.shipment_id %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-geo-alt"></i> Track Shipment
+        </a>
+    </div>
+</div>
+{% endblock %}

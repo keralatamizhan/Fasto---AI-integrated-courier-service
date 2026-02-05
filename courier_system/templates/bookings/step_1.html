@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Courier - Step 1{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar {
+        min-height: calc(100vh - 56px);
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+    }
+    .sidebar .nav-link {
+        color: #495057;
+        padding: 0.75rem 1.5rem;
+    }
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    .step.active .step-number {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .step.completed .step-number {
+        background-color: var(--success-color);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">
+            <i class="bi bi-truck"></i> Smart Courier
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
+            <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <h2 class="mb-4">Book Courier</h2>
+    
+    <div class="step-indicator">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <div>Sender Details</div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div>Receiver Details</div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div>Parcel Details</div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div>Review & Confirm</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-4">Step 1: Sender Details</h4>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="sender_name" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="sender_name" name="sender_name" value="{{ sender_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="sender_phone" class="form-label">Phone Number *</label>
+                    <input type="tel" class="form-control" id="sender_phone" name="sender_phone" value="{{ sender_phone }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="sender_address" class="form-label">Address *</label>
+                    <textarea class="form-control" id="sender_address" name="sender_address" rows="2" required>{{ sender_address }}</textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="sender_city" class="form-label">City *</label>
+                        <input type="text" class="form-control" id="sender_city" name="sender_city" value="{{ sender_city }}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="sender_state" class="form-label">State *</label>
+                        <input type="text" class="form-control" id="sender_state" name="sender_state" value="{{ sender_state }}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="sender_postal_code" class="form-label">Postal Code *</label>
+                        <input type="text" class="form-control" id="sender_postal_code" name="sender_postal_code" value="{{ sender_postal_code }}" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="sender_country" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="sender_country" name="sender_country" value="{{ sender_country|default:'USA' }}">
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Next: Receiver Details</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

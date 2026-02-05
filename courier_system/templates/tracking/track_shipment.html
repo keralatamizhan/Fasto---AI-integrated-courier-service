@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Shipment - {{ shipment.shipment_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 2rem;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.75rem;
+        top: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: #dee2e6;
+        border: 3px solid white;
+    }
+    .timeline-item.active::before {
+        background: var(--primary-color);
+    }
+    .timeline-item.completed::before {
+        background: var(--success-color);
+    }
+    .location-card {
+        border-left: 4px solid var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Track Shipment: {{ shipment.shipment_id }}</h2>
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Shipment Status</h5>
+                    <span class="badge bg-{% if shipment.status == 'delivered' %}success{% elif shipment.status == 'pending' %}warning{% elif shipment.status == 'in_transit' %}info{% elif shipment.status == 'out_for_delivery' %}primary{% else %}secondary{% endif %}">
+                        {{ shipment.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    {% if latest_log %}
+                    <div class="location-card card mb-3">
+                        <div class="card-body">
+                            <h6><i class="bi bi-geo-alt-fill"></i> Current Location</h6>
+                            <p class="mb-1"><strong>{{ latest_log.location_name }}</strong></p>
+                            <p class="text-muted mb-0 small">
+                                Coordinates: {{ latest_log.latitude }}, {{ latest_log.longitude }}<br>
+                                Last Updated: {{ latest_log.timestamp|date:"F d, Y H:i" }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <h6 class="mb-3">Tracking Timeline</h6>
+                    {% if tracking_logs %}
+                    <div class="timeline">
+                        {% for log in tracking_logs %}
+                        <div class="timeline-item {% if forloop.first %}active{% elif log.status == 'delivered' %}completed{% endif %}">
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h6 class="mb-1">{{ log.location_name }}</h6>
+                                    <p class="text-muted mb-1 small">{{ log.description|default:log.status }}</p>
+                                    <p class="text-muted mb-0 small">{{ log.timestamp|date:"F d, Y H:i" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Tracking information will be available once the shipment is confirmed.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if delay_info and delay_info.is_delayed %}
+            <div class="alert alert-warning mt-3">
+                <h6><i class="bi bi-exclamation-triangle"></i> Delay Detected</h6>
+                <p class="mb-0">Your shipment is delayed by approximately {{ delay_info.delay_hours }} hours. We apologize for the inconvenience.</p>
+            </div>
+            {% endif %}
+
+            {% if issues %}
+            <div class="card mt-3">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Issues Detected</h6>
+                </div>
+                <div class="card-body">
+                    {% for issue in issues %}
+                    <div class="alert alert-{% if issue.severity == 'high' %}danger{% elif issue.severity == 'medium' %}warning{% else %}info{% endif %} mb-2">
+                        {{ issue.message }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6>Shipment Details</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>From:</strong> {{ shipment.sender_city }}</p>
+                    <p class="mb-2"><strong>To:</strong> {{ shipment.receiver_city }}</p>
+                    <p class="mb-2"><strong>Delivery Option:</strong> {{ shipment.get_delivery_option_display }}</p>
+                    {% if shipment.estimated_delivery_date %}
+                    <p class="mb-0"><strong>Estimated Delivery:</strong><br>{{ shipment.estimated_delivery_date|date:"F d, Y H:i" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if shipment.status != 'delivered' and shipment.status != 'cancelled' %}
+            <div class="card">
+                <div class="card-body text-center">
+                    <button class="btn btn-primary" onclick="updateLocation()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh Location
+                    </button>
+                    <p class="text-muted small mt-2">Click to get the latest location update</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function updateLocation() {
+    fetch('{% url "tracking:update_location" shipment.shipment_id %}')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('No update available at this time.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating location.');
+        });
+}
+
+// Auto-refresh every 30 seconds if shipment is in transit
+{% if shipment.status in 'picked_up,in_transit,out_for_delivery' %}
+setInterval(updateLocation, 30000);
+{% endif %}
+</script>
+{% endblock %}

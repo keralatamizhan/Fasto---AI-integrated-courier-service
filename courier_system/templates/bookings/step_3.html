@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Courier - Step 3{% endblock %}
+
+{% block extra_css %}
+<style>
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    .step.active .step-number {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .step.completed .step-number {
+        background-color: var(--success-color);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'accounts:dashboard' %}">
+            <i class="bi bi-truck"></i> Smart Courier
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
+            <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <h2 class="mb-4">Book Courier</h2>
+    
+    <div class="step-indicator">
+        <div class="step completed">
+            <div class="step-number"><i class="bi bi-check"></i></div>
+            <div>Sender Details</div>
+        </div>
+        <div class="step completed">
+            <div class="step-number"><i class="bi bi-check"></i></div>
+            <div>Receiver Details</div>
+        </div>
+        <div class="step active">
+            <div class="step-number">3</div>
+            <div>Parcel Details</div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div>Review & Confirm</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-4">Step 3: Parcel Details</h4>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="parcel_type" class="form-label">Parcel Type *</label>
+                    <input type="text" class="form-control" id="parcel_type" name="parcel_type" value="{{ parcel_type }}" placeholder="e.g., Documents, Electronics, Clothing" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="weight_category" class="form-label">Weight Category *</label>
+                        <select class="form-select" id="weight_category" name="weight_category" required>
+                            <option value="">Select...</option>
+                            <option value="light" {% if weight_category == 'light' %}selected{% endif %}>Light (< 1kg)</option>
+                            <option value="medium" {% if weight_category == 'medium' %}selected{% endif %}>Medium (1-5kg)</option>
+                            <option value="heavy" {% if weight_category == 'heavy' %}selected{% endif %}>Heavy (5-10kg)</option>
+                            <option value="extra_heavy" {% if weight_category == 'extra_heavy' %}selected{% endif %}>Extra Heavy (> 10kg)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="weight_kg" class="form-label">Weight (kg) *</label>
+                        <input type="number" class="form-control" id="weight_kg" name="weight_kg" value="{{ weight_kg }}" step="0.01" min="0.1" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="dimensions_length" class="form-label">Length (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_length" name="dimensions_length" value="{{ dimensions_length }}" step="0.1" min="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="dimensions_width" class="form-label">Width (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_width" name="dimensions_width" value="{{ dimensions_width }}" step="0.1" min="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="dimensions_height" class="form-label">Height (cm)</label>
+                        <input type="number" class="form-control" id="dimensions_height" name="dimensions_height" value="{{ dimensions_height }}" step="0.1" min="0">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3">{{ description }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="fragile" name="fragile" {% if fragile %}checked{% endif %}>
+                        <label class="form-check-label" for="fragile">
+                            Fragile Item (Additional handling fee applies)
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'bookings:book_courier_step' step=2 %}" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-primary">Next: Review & Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
